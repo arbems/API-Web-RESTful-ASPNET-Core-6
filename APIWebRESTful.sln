@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1700.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIWebRESTful", "APIWebRESTful\APIWebRESTful.csproj", "{40588012-FC15-4C1F-8018-54C4514D2728}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIWebRESTful.Test", "APIWebRESTful.Test\APIWebRESTful.Test.csproj", "{646329C3-4223-4832-AD98-820858AA1BCC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40588012-FC15-4C1F-8018-54C4514D2728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40588012-FC15-4C1F-8018-54C4514D2728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40588012-FC15-4C1F-8018-54C4514D2728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40588012-FC15-4C1F-8018-54C4514D2728}.Release|Any CPU.Build.0 = Release|Any CPU
+		{646329C3-4223-4832-AD98-820858AA1BCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{646329C3-4223-4832-AD98-820858AA1BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{646329C3-4223-4832-AD98-820858AA1BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{646329C3-4223-4832-AD98-820858AA1BCC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {02365E81-870D-4C50-B397-9EB520C5751A}
+	EndGlobalSection
+EndGlobal
