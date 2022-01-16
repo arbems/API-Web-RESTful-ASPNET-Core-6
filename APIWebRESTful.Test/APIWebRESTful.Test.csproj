@@ -22,4 +22,10 @@
   <ItemGroup>
     <ProjectReference Include="..\APIWebRESTful\APIWebRESTful.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="UnitTests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UnitTests\" />
+  </ItemGroup>
 </Project>

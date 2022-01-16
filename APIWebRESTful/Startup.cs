@@ -13,8 +13,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using APIWebRESTful.Data;
 using AutoMapper;
+using APIWebRESTful.Filters;
+using APIWebRESTful.Services;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace APIWebRESTful
 {
@@ -30,8 +37,25 @@ namespace APIWebRESTful
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(opt =>
+
+                opt.Filters.Add(typeof(FilterException))
+
+                ).AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve)
+                .AddNewtonsoftJson();
+
             services.AddDbContext<MyContext>(opt => opt.UseInMemoryDatabase("TodoList"));
+
+            services.AddTransient<FilterAction>();
+
+            services.AddHostedService<WriteToFile>();
+
+            services.AddResponseCaching();
+
+            // JwtBearer Configurations
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+
+            // Swagger Configurations
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "APIWebRESTful", Version = "v1" });
@@ -45,6 +69,22 @@ namespace APIWebRESTful
 
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
+
+            // Identity Configurations
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<MyContext>()
+                .AddDefaultTokenProviders();
+
+            // CORS Configurations (Test: https://apirequest.io)
+            services.AddCors(opt => {
+                opt.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("http://*.example.com", "https://apirequest.io")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,6 +100,10 @@ namespace APIWebRESTful
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
+
+            app.UseResponseCaching();
 
             app.UseAuthorization();
 

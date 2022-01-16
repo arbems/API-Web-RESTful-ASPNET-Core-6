@@ -15,19 +15,25 @@ namespace APIWebRESTful
     {
         public static void Main(string[] args)
         {
-            IHost host = CreateHostBuilder(args).Build();            
-            SeedDatabase(host);
+            IHost host = CreateHostBuilder(args).Build();
+
+            InitializeDatabase(host);
+
             host.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            var builder = Host.CreateDefaultBuilder(args);
+
+            return builder.ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+        }
+            
 
-        private static void SeedDatabase(IHost host)
+        private static void InitializeDatabase(IHost host)
         {
             var scopeFactory = host.Services.GetRequiredService<IServiceScopeFactory>();
 
@@ -39,7 +45,7 @@ namespace APIWebRESTful
                 {
                     try
                     {
-                        SeedData.Initialize(context);
+                        InitializeData.Initialize(context);
                     }
                     catch (Exception ex)
                     {

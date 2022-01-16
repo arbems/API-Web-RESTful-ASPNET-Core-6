@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using APIWebRESTful.Data;
+using APIWebRESTful.Filters;
 using APIWebRESTful.Models;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -14,40 +17,69 @@ using Microsoft.Extensions.Logging;
 namespace APIWebRESTful.Controllers
 {
     [ApiController]
-    [Route("api/v1")]
-    public class HeroController : ControllerBase
+    [Route("api/v1/[Controller]")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
+    public class HeroesController : ControllerBase
     {
-        private readonly ILogger<HeroController> _logger;
+        private readonly ILogger<HeroesController> _logger;
         private readonly MyContext _context;
         private readonly IMapper _mapper;
 
-        public HeroController(ILogger<HeroController> logger, MyContext context, IMapper mapper)
+        public HeroesController(ILogger<HeroesController> logger, MyContext context, IMapper mapper)
         {
             _logger = logger;
             _context = context;
             _mapper = mapper;
         }
 
-        [HttpGet("heroes")]
-        public async Task<IEnumerable<HeroDTO>> Get()
+        // GET: api/v1/heroes
+        [HttpGet("List")]
+        [ResponseCache(Duration = 10)]
+        [ServiceFilter(typeof(FilterAction))]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> List()
         {
-            return await _mapper.ProjectTo<HeroDTO>(_context.Heroes)
+            var heroesDto = await _mapper.ProjectTo<HeroDTO>(_context.Heroes)
                 .ToListAsync();
-        }
 
-        [HttpGet("hero/{id}")]
+            return Ok(heroesDto);
+        }
+        // GET: api/v1/heroes/5
+        [HttpGet("{id:int}")]// Name = "GetHero"
         public async Task<ActionResult<HeroDTO>> Get(int id)
         {
             var hero = await _context.Heroes.FindAsync(id);
             
             if (hero is null)
-                return NotFound();
+                return NotFound(id);
 
             var heroDto = _mapper.Map<HeroDTO>(hero);
 
             return Ok(heroDto);
         }
+        // GET: api/v1/heroes/superman
+        [HttpGet("{name}")]
+        public async Task<ActionResult<HeroDTO>> Get([FromRoute] string name, [FromQuery] bool populate)
+        {
+            var hero = await _context.Heroes.FirstOrDefaultAsync(h => h.Name.Contains(name) && h.IsPopulate == populate);
 
+            if (hero is null)
+                return NotFound(name);
+
+            var heroDto = _mapper.Map<HeroDTO>(hero);
+
+            return Ok(heroDto);
+        }
+        // GET: api/v1/heroes/populate
+        [HttpGet("Populate")]
+        public async Task<IActionResult> Populate()
+        {
+            var heroesDto = await _mapper.ProjectTo<HeroDTO>(_context.Heroes.Where(h => h.IsPopulate == true))
+                .ToListAsync();
+
+            return Ok(heroesDto);
+        }
+        // POST: api/v1/heroes
         [HttpPost]
         public async Task<ActionResult<HeroDTO>> Post([FromBody] HeroDTO heroDto)
         {
@@ -61,11 +93,8 @@ namespace APIWebRESTful.Controllers
 
             return CreatedAtAction(nameof(Get), new { id = hero.Id }, _mapper.Map<HeroDTO>(hero));
         }
-        
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        // PUT: api/v1/heroes/5
+        [HttpPut("{id:int}")]
         public async Task<IActionResult> Put(int id, HeroDTO heroDto)
         {
             if (id != heroDto.Id)
@@ -88,15 +117,12 @@ namespace APIWebRESTful.Controllers
 
             return NoContent();
         }
-
-        [HttpPatch("{id}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        // PATCH: api/v1/heroes/5
+        [HttpPatch("{id:int}")]
         public async Task<IActionResult> Patch(int id, [FromBody] JsonPatchDocument<HeroDTO> patchDoc)
         {
             if (patchDoc is null)
-                return BadRequest();
+                return BadRequest(ModelState);
 
             var hero = await _context.Heroes.FindAsync(id);
             if (hero is null)
@@ -106,9 +132,11 @@ namespace APIWebRESTful.Controllers
 
             patchDoc.ApplyTo(heroDto, ModelState);
 
-            var isValid = TryValidateModel(hero);
-            if (!isValid)
-                return BadRequest(ModelState); 
+            var isValid = TryValidateModel(heroDto);
+            if(!isValid)
+                return BadRequest(ModelState);
+
+            _mapper.Map(heroDto, hero);
 
             try
             {
@@ -121,12 +149,8 @@ namespace APIWebRESTful.Controllers
 
             return NoContent();
         }
-
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesDefaultResponseType]
+        // DELETE: api/v1/heroes/5
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var hero = await _context.Heroes.FindAsync(id);
@@ -146,3 +170,15 @@ namespace APIWebRESTful.Controllers
     }
 }
 
+
+
+/*
+ BODY LLAMADA A PATCH:
+    [
+      {
+        "op": "operationName",
+        "path": "/propertyName",
+        "value": "newPropertyValue"
+      }
+    ] 
+ */
