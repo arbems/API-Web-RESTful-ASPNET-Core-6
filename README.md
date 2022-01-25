@@ -1,6 +1,6 @@
-# API web de RESTful con controlador de ASP.NET Core
+# API Web RESTful ASP.NET Core
 
-Este ejemplo se centra en el desarrollo de un servicio HTTP de RESTful con una API web de ASP.NET Core.
+Este ejemplo se centra en el desarrollo de un servicio HTTP de RESTful con una API web con controladores ASP.NET Core.
 
 * API web con controlador de ASP.NET Core.
 * Entity Framework Core (In Memory).
