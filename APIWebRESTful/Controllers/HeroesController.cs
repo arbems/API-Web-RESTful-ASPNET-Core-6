@@ -33,11 +33,11 @@ namespace APIWebRESTful.Controllers
         }
 
         // GET: api/v1/heroes
-        [HttpGet("List")]
+        [HttpGet]
         [ResponseCache(Duration = 10)]
         [ServiceFilter(typeof(FilterAction))]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<IActionResult> List()
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> Get()
         {
             var heroesDto = await _mapper.ProjectTo<HeroDTO>(_context.Heroes)
                 .ToListAsync();
@@ -46,12 +46,12 @@ namespace APIWebRESTful.Controllers
         }
         // GET: api/v1/heroes/5
         [HttpGet("{id:int}")]// Name = "GetHero"
-        public async Task<ActionResult<HeroDTO>> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var hero = await _context.Heroes.FindAsync(id);
             
             if (hero is null)
-                return NotFound(id);
+                return NotFound($"Hero with Id = {id} not found.");
 
             var heroDto = _mapper.Map<HeroDTO>(hero);
 
@@ -59,12 +59,12 @@ namespace APIWebRESTful.Controllers
         }
         // GET: api/v1/heroes/superman
         [HttpGet("{name}")]
-        public async Task<ActionResult<HeroDTO>> Get([FromRoute] string name, [FromQuery] bool populate)
+        public async Task<IActionResult> Get([FromRoute] string name, [FromQuery] bool populate)
         {
             var hero = await _context.Heroes.FirstOrDefaultAsync(h => h.Name.Contains(name) && h.IsPopulate == populate);
 
             if (hero is null)
-                return NotFound(name);
+                return NotFound($"Hero with Name = {name} not found.");
 
             var heroDto = _mapper.Map<HeroDTO>(hero);
 
@@ -81,28 +81,37 @@ namespace APIWebRESTful.Controllers
         }
         // POST: api/v1/heroes
         [HttpPost]
-        public async Task<ActionResult<HeroDTO>> Post([FromBody] HeroDTO heroDto)
+        public async Task<ActionResult<HeroDTO>> Post([FromForm] HeroDTO heroDto)
         {
+            if (heroDto is null)
+                return BadRequest(ModelState);
+
             var hero = _mapper.Map<Hero>(heroDto);
 
             _context.Heroes.Add(hero);
 
             var result = await _context.SaveChangesAsync();
             if(result <= 0)
-                return BadRequest("Your changes have not been saved.");
+                return BadRequest("Your changes have no[t been saved.");
 
             return CreatedAtAction(nameof(Get), new { id = hero.Id }, _mapper.Map<HeroDTO>(hero));
         }
         // PUT: api/v1/heroes/5
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Put(int id, HeroDTO heroDto)
+        public async Task<IActionResult> Put(int id, [FromBody]HeroDTO heroDto)
         {
+            if (heroDto is null)
+                return BadRequest(ModelState);
+
             if (id != heroDto.Id)
                 return BadRequest("Identifier is not valid or Identifiers don't match.");
 
-            var hero = _mapper.Map<Hero>(heroDto);
+            var hero = _context.Heroes.FirstOrDefault(h => h.Id == id);
 
-            _context.Entry(hero).State = EntityState.Modified;
+            if (hero is null)
+                return NotFound($"Hero with Id = {id} not found.");
+
+            _mapper.Map(heroDto, hero);
 
             try
             {
@@ -126,7 +135,7 @@ namespace APIWebRESTful.Controllers
 
             var hero = await _context.Heroes.FindAsync(id);
             if (hero is null)
-                return NotFound();
+                return NotFound($"Hero with Id = {id} not found");
 
             var heroDto = _mapper.Map<HeroDTO>(hero);
 
@@ -156,7 +165,7 @@ namespace APIWebRESTful.Controllers
             var hero = await _context.Heroes.FindAsync(id);
 
             if (hero is null)
-                return NotFound();
+                return NotFound($"Hero with Id = {id} not found");
 
             _context.Heroes.Remove(hero);
 
