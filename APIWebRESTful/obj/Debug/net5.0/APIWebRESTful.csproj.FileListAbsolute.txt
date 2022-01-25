@@ -72,8 +72,6 @@
 /Users/arbems/Projects/Entity-Framework-Core-Web-API/APIWebRESTful/obj/Debug/net5.0/APIWebRESTful.genruntimeconfig.cache
 /Users/arbems/Projects/Entity-Framework-Core-Web-API/APIWebRESTful/bin/Debug/net5.0/AutoMapper.dll
 /Users/arbems/Projects/Entity-Framework-Core-Web-API/APIWebRESTful/bin/Debug/net5.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
-/Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/bin/Debug/net5.0/appsettings.Development.json
-/Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/bin/Debug/net5.0/appsettings.json
 /Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/bin/Debug/net5.0/APIWebRESTful.deps.json
 /Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/bin/Debug/net5.0/APIWebRESTful.runtimeconfig.json
 /Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/bin/Debug/net5.0/APIWebRESTful.runtimeconfig.dev.json
@@ -122,3 +120,4 @@
 /Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/obj/Debug/net5.0/ref/APIWebRESTful.dll
 /Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/obj/Debug/net5.0/APIWebRESTful.pdb
 /Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/obj/Debug/net5.0/APIWebRESTful.genruntimeconfig.cache
+/Users/arbems/Projects/API-Web-RESTful-ASPNET-Core/APIWebRESTful/bin/Debug/net5.0/APIWebRESTful/apphost
