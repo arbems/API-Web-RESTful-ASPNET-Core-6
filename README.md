@@ -1,4 +1,4 @@
-# API Web RESTful ASP.NET Core
+# API Web RESTful ASP.NET Core 6
 
 Este ejemplo se centra en el desarrollo de un servicio HTTP de RESTful con una API web con controladores ASP.NET Core.
 
